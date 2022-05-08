@@ -1,84 +1,56 @@
 ﻿using Dalamud.Game.ClientState;
 using Dalamud.Game.Command;
-using Dalamud.Game.Gui;
-using Dalamud.Interface.Windowing;
-using Dalamud.Logging;
+using Dalamud.Game.ClientState.Conditions;
+using Dalamud.IoC;
 using Dalamud.Plugin;
-using DalamudPluginProjectTemplate.Attributes;
 using System;
+using Dalamud.Game;
 
-namespace DalamudPluginProjectTemplate
+namespace mMovement
 {
     public class Plugin : IDalamudPlugin
     {
-        private readonly DalamudPluginInterface pluginInterface;
-        private readonly ChatGui chat;
-        private readonly ClientState clientState;
+        public string Name => "mMovement";
+        private const string SettingsCommand = "/mmovement";
 
-        private readonly PluginCommandManager<Plugin> commandManager;
-        private readonly Configuration config;
-        private readonly WindowSystem windowSystem;
+        [PluginService] internal DalamudPluginInterface Interface { get; private set; }
+        [PluginService] internal SigScanner SigScanner { get; private set; }
+        [PluginService] internal ClientState ClientState { get; private set; }
+        [PluginService] internal CommandManager CommandManager { get; private set; }
+        [PluginService] internal Condition Condition { get; private set; }
 
-        public string Name => "Your Plugin's Display Name";
+        internal Configuration Config { get; }
+        internal Memory Memory { get; }
+        internal PluginUi Ui { get; }
+        internal Hooks Hooks { get; }
+        private Commands Commands { get; }
 
-        public Plugin(
-            DalamudPluginInterface pi,
-            CommandManager commands,
-            ChatGui chat,
-            ClientState clientState)
+        public Plugin()
         {
-            this.pluginInterface = pi;
-            this.chat = chat;
-            this.clientState = clientState;
+            this.Config = this.Interface!.GetPluginConfig() as Configuration ?? new Configuration();
 
-            // Get or create a configuration object
-            this.config = (Configuration)this.pluginInterface.GetPluginConfig()
-                          ?? this.pluginInterface.Create<Configuration>();
+            // Info gathering //Camera Memory //Is Player Moving //Mouse State
+            this.Memory = new Memory(this);
 
-            // Initialize the UI
-            this.windowSystem = new WindowSystem(typeof(Plugin).AssemblyQualifiedName);
+            // Hooks //Camera Location //Movement Type //Camera Type
+            this.Hooks = new Hooks(this);
 
-            var window = this.pluginInterface.Create<PluginWindow>();
-            if (window is not null)
-            {
-                this.windowSystem.AddWindow(window);
-            }
+            //Create Windows
+            this.Ui = new PluginUi(this);
 
-            this.pluginInterface.UiBuilder.Draw += this.windowSystem.Draw;
-
-            // Load all of our commands
-            this.commandManager = new PluginCommandManager<Plugin>(this, commands);
+            //Create Commands
+            this.Commands = new Commands(this);
         }
-
-        [Command("/example1")]
-        [HelpMessage("Example help message.")]
-        public void ExampleCommand1(string command, string args)
-        {
-            // You may want to assign these references to private variables for convenience.
-            // Keep in mind that the local player does not exist until after logging in.
-            var world = this.clientState.LocalPlayer?.CurrentWorld.GameData;
-            this.chat.Print($"Hello, {world?.Name}!");
-            PluginLog.Log("Message sent successfully.");
-        }
-
-        #region IDisposable Support
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-
-            this.commandManager.Dispose();
-
-            this.pluginInterface.SavePluginConfig(this.config);
-
-            this.pluginInterface.UiBuilder.Draw -= this.windowSystem.Draw;
-            this.windowSystem.RemoveAllWindows();
-        }
-
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            this.Commands.Dispose();
+            this.Ui.Dispose();
+            //this.Memory.Dispose();
+            this.Hooks.Dispose();
         }
-        #endregion
+        internal void SaveConfig()
+        {
+            this.Interface.SavePluginConfig(this.Config);
+        }
     }
 }

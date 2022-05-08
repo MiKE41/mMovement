@@ -1,26 +1,14 @@
 ﻿using Dalamud.Configuration;
-using Dalamud.Plugin;
 
-namespace DalamudPluginProjectTemplate
+namespace mMovement
 {
     public class Configuration : IPluginConfiguration
     {
-        int IPluginConfiguration.Version { get; set; }
-
-        #region Saved configuration values
-        public string CoolText { get; set; }
-        #endregion
-
-        private readonly DalamudPluginInterface pluginInterface;
-
-        public Configuration(DalamudPluginInterface pi)
-        {
-            this.pluginInterface = pi;
-        }
-
-        public void Save()
-        {
-            this.pluginInterface.SavePluginConfig(this);
-        }
+        public int Version { get; set; }
+        public bool MovementModeOverride = true;
+        public Types.MovementMode MovementModeOverrideValue = Types.MovementMode.MiKE;
+        public bool CameraModeOverride = true;
+        public Types.CameraMode CameraModeOverrideValue = Types.CameraMode.Standard;
+        public bool CameraArcOverride = true;
     }
 }
