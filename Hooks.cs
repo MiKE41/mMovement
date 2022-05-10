@@ -12,9 +12,9 @@ namespace mMovement
         private Plugin Plugin { get; }
         private static class Signatures
         {
-            internal const string GetCameraMode = "48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC 20 48 8B F9 BB ?? ?? ?? ?? 8B 89 ?? ?? ?? ?? 85 C9 0F 84"; //Client__Game__Camera_vf16
-            internal const string GetMovementMode = "48 83 EC 28 0F B6 41 10 3C 02 74 08 0F B6 C0 48 83 C4 28 C3 48 8B 05";
-            internal const string GetCameraArcLeftRight = "E8 ?? ?? ?? ?? 0F 28 F0 E8 ?? ?? ?? ?? 0F 28 F8 0F 28 C6 E8 ?? ?? ?? ?? 0F 28 CF F3 0F 11 44 24"; //A call from MP_Something_CharacterMovement2 to Client__Game__Camera_MP5_Legacy_Position
+            internal const string GetCameraMode = "48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC ?? 48 8B F9 BB"; //Client__Game__Camera_vf16
+            internal const string GetMovementMode = "48 83 EC ?? 0F B6 41 ?? 3C ?? 74";
+            internal const string GetCameraArcLeftRight = "E8 ?? ?? ?? ?? 0F 28 F0 E8 ?? ?? ?? ?? 0F 28 F8 0F 28 C6 E8 ?? ?? ?? ?? 0F 28 CF"; //A call from MP_Something_CharacterMovement2 to Client__Game__Camera_MP5_Legacy_Position
         }
         #region Delegates
         private delegate Types.CameraMode GetCameraModeDelegate(IntPtr a1);
