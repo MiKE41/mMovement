@@ -94,5 +94,10 @@ namespace mMovement
         {
             return Marshal.PtrToStructure<CameraMemoryStruct>(CameraAddress);
         }
+
+        public void SetCharacterRotationToCamera()
+        {
+            Marshal.WriteByte(g_PlayerMoveControllerAddress + 0x3F, 1);
+        }
     }
 }

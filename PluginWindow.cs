@@ -82,6 +82,8 @@ namespace mMovement
             ImGui.Text($"LegacyCameraLocation: {this.Ui.Plugin.Hooks.CameraArcLeftRight}");
             ImGui.Checkbox("LegacyCameraLocation Override Enabled", ref this.Ui.Plugin.Config.CameraArcOverride);
 
+            ImGui.Checkbox("Right Click Override Enabled", ref this.Ui.Plugin.Config.RightClickOverride);
+
             if (ImGui.Button("Save")) { this.Ui.Plugin.SaveConfig();  }
 
             ImGui.Text("Memory things");

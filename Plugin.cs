@@ -18,6 +18,7 @@ namespace mMovement
         [PluginService] internal ClientState ClientState { get; private set; }
         [PluginService] internal CommandManager CommandManager { get; private set; }
         [PluginService] internal Condition Condition { get; private set; }
+        [PluginService] internal Framework Framework { get; init; }
 
         internal Configuration Config { get; }
         internal Memory Memory { get; }
@@ -40,13 +41,25 @@ namespace mMovement
 
             //Create Commands
             this.Commands = new Commands(this);
+
+            this.Framework.Update += this.OnFrameworkUpdate;
         }
+
+        private void OnFrameworkUpdate(Dalamud.Game.Framework framework)
+        {
+            if (this.Memory.RightClick() && !this.Memory.IsCharacterMoving() && Config.RightClickOverride)
+            {
+                this.Memory.SetCharacterRotationToCamera();
+            }
+        }
+
         public void Dispose()
         {
             this.Commands.Dispose();
             this.Ui.Dispose();
             //this.Memory.Dispose();
             this.Hooks.Dispose();
+            this.Framework.Update -= this.OnFrameworkUpdate;
         }
         internal void SaveConfig()
         {

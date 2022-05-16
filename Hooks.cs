@@ -72,23 +72,9 @@ namespace mMovement
         {
             Types.MovementMode ret = this.GetMovementModeHook.Original(a1);
 
-            if (this.Plugin.ClientState.IsLoggedIn && this.Plugin.Config.MovementModeOverride && (ret == Types.MovementMode.Legacy || ret == Types.MovementMode.Standard))
+            if (this.Plugin.ClientState.IsLoggedIn && this.Plugin.Config.MovementModeOverride)
             {
-                if (this.Plugin.Config.MovementModeOverrideValue == Types.MovementMode.MiKE)
-                {
-                    if ((this.Plugin.Memory.RightClick() && !this.Plugin.Memory.IsCharacterMoving()) || this.Plugin.Condition[ConditionFlag.InFlight])
-                    {
-                        ret = Types.MovementMode.Standard;
-                    }
-                    else
-                    {
-                        ret = Types.MovementMode.Legacy;
-                    }
-                }
-                else
-                {
                     ret = this.Plugin.Config.MovementModeOverrideValue;
-                }
             }
 
             MovementModeValue = ret;

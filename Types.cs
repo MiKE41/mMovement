@@ -5,8 +5,7 @@
         public enum MovementMode
         {
             Standard = 0,
-            Legacy = 1,
-            MiKE = 254
+            Legacy = 1
         }
         public enum CameraMode
         {
