@@ -13,6 +13,7 @@ namespace mMovement
             internal const string CameraSignature = "48 8B 3D ?? ?? ?? ?? 48 85 FF 0F 84 ?? ?? ?? ?? F3 0F 10 81"; //Client__Game__Camera3_vf10 -> g_Client::Game::ControlSystem::CameraManager_Instance
             internal const string g_PlayerMoveControllerSignature = "48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8D 8B ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 83 3D"; //Client::Game::GameMain_Update
             internal const string g_InputManager_MouseButtonHoldStateSignature = "39 1D ?? ?? ?? ?? 74 ?? 48 8D 0D";
+            internal const string g_IsAutoRunningSignature = "0F B6 05 ?? ?? ?? ?? 2C ?? 3C ?? 76 ?? 80 79 ?? ?? 75 ?? 83 B9 ?? ?? ?? ?? ?? F3 0F 59 C9";
         }
 
         [Signature(Signatures.CameraSignature, ScanType = ScanType.StaticAddress)]
@@ -24,6 +25,9 @@ namespace mMovement
 
         [Signature(Signatures.g_InputManager_MouseButtonHoldStateSignature, ScanType = ScanType.StaticAddress)]
         private readonly IntPtr g_InputManager_MouseButtonHoldStateAddress;
+
+        [Signature(Signatures.g_IsAutoRunningSignature, ScanType = ScanType.StaticAddress)]
+        private readonly IntPtr g_IsAutoRunningAddress;
 
         [StructLayout(LayoutKind.Explicit)]
         public struct CameraMemoryStruct
@@ -44,6 +48,8 @@ namespace mMovement
             [FieldOffset(0x12C)] public float fov2;
             [FieldOffset(0x130)] public float arc_left_right;
             [FieldOffset(0x134)] public float arc_up_down;
+            [FieldOffset(0x13c)] public float unk1;
+            [FieldOffset(0x14c)] public float unk2  ;
             [FieldOffset(0x150)] public float pan;
             [FieldOffset(0x154)] public float tilt;
             [FieldOffset(0x160)] public float rotation;
@@ -61,6 +67,7 @@ namespace mMovement
             PluginLog.Verbose($"CameraAddress {CameraAddress.ToInt64():X}");
             PluginLog.Verbose($"g_PlayerMoveControllerAddress {g_PlayerMoveControllerAddress.ToInt64():X}");
             PluginLog.Verbose($"g_InputManager_MouseButtonHoldStateAddress {g_InputManager_MouseButtonHoldStateAddress.ToInt64():X}");
+            PluginLog.Verbose($"g_IsAutoRunningAddress {g_IsAutoRunningAddress.ToInt64():X}");
         }
 
         private bool GetBit(byte b, int bitNumber)
@@ -90,14 +97,14 @@ namespace mMovement
             return Marshal.ReadByte(a + 0x1FD) == 1;
         }
 
+        public bool IsAutoRunning()
+        {
+            return Marshal.ReadByte(g_IsAutoRunningAddress) == 3;
+        }
+
         public CameraMemoryStruct Camera()
         {
             return Marshal.PtrToStructure<CameraMemoryStruct>(CameraAddress);
-        }
-
-        public void SetCharacterRotationToCamera()
-        {
-            Marshal.WriteByte(g_PlayerMoveControllerAddress + 0x3F, 1);
         }
     }
 }
