@@ -17,6 +17,7 @@ namespace mMovement
             internal const string GetCameraArcLeftRight = "E8 ?? ?? ?? ?? 0F 28 F0 E8 ?? ?? ?? ?? 0F 28 F8 0F 28 C6 E8 ?? ?? ?? ?? 0F 28 CF"; //A call from MP_Something_CharacterMovement2 to Client__Game__Camera_MP5_Legacy_Position
             internal const string IsInputIDKeyPress = "E8 ?? ?? ?? ?? 84 C0 48 63 03";
             internal const string MP_KeyPress = "E8 ?? ?? ?? ?? 48 63 13";
+            internal const string ShouldRotatePlayerCamera = "E8 ?? ?? ?? ?? 48 8B CB 85 C0 0F 84 ?? ?? ?? ?? 83 E8 ";
         }
         #region Delegates
         private delegate Types.CameraMode GetCameraModeDelegate(IntPtr a1);
@@ -29,6 +30,8 @@ namespace mMovement
         private delegate bool IsInputIDKeyPressDelegate(IntPtr a1, int a2);
 
         private delegate bool MP_KeyPressDelegate(IntPtr a1, int a2);
+
+        private delegate byte ShouldRotatePlayerCameraDelegate(IntPtr a1, IntPtr a2, byte a3, byte a4);
         #endregion
         #region Hooks
         [Signature(Signatures.GetCameraMode, DetourName = nameof(GetCameraModeDetour))]
@@ -45,6 +48,9 @@ namespace mMovement
 
         [Signature(Signatures.MP_KeyPress, DetourName = nameof(MP_KeyPressDetour))]
         private readonly Hook<MP_KeyPressDelegate>? MP_KeyPressHook = null;
+
+        [Signature(Signatures.ShouldRotatePlayerCamera, DetourName = nameof(ShouldRotatePlayerCameraDetour))]
+        private readonly Hook<ShouldRotatePlayerCameraDelegate>? ShouldRotatePlayerCameraHook = null;
         #endregion
         internal Hooks(Plugin plugin)
         {
@@ -57,12 +63,14 @@ namespace mMovement
             this.GetMovementModeHook?.Enable();
             this.IsInputIDKeyPressHook?.Enable(); // this one only seems to handle the strafe key presses -- and all it seems to do is force the character to backpeddle when holding move back and strafe at the same time.
             this.MP_KeyPressHook?.Enable();
+            this.ShouldRotatePlayerCameraHook?.Enable();
 
             PluginLog.Verbose($"GetCameraMode: {GetCameraModeHook.Address.ToInt64():X}");
             PluginLog.Verbose($"GetMovementMode: {GetMovementModeHook.Address.ToInt64():X}");
             PluginLog.Verbose($"GetCameraArcLeftRight: {GetCameraArcLeftRightHook.Address.ToInt64():X}");
             PluginLog.Verbose($"IsInputIDKeyPress: {IsInputIDKeyPressHook.Address.ToInt64():X}");
             PluginLog.Verbose($"MP_KeyPress: {MP_KeyPressHook.Address.ToInt64():X}");
+            PluginLog.Verbose($"ShouldRotatePlayerCamera: {ShouldRotatePlayerCameraHook.Address.ToInt64():X}");
         }
         public void Dispose()
         {
@@ -71,6 +79,7 @@ namespace mMovement
             this.GetMovementModeHook?.Dispose();
             this.IsInputIDKeyPressHook?.Dispose();
             this.MP_KeyPressHook?.Dispose();
+            this.ShouldRotatePlayerCameraHook?.Dispose();
         }
         internal Types.CameraMode CameraModeValue;
         private Types.CameraMode GetCameraModeDetour(IntPtr a1)
@@ -219,6 +228,16 @@ namespace mMovement
 
             return ret;
         }
+        
+        private byte ShouldRotatePlayerCameraDetour(IntPtr a1, IntPtr a2, byte a3, byte a4)
+        {
+            byte ret = ShouldRotatePlayerCameraHook.Original(a1, a2, a3, a4);
+
+            //PluginLog.Verbose($"ShouldRot: a1: {a1}; a2: {a2}; a3: {a3}; a4: {a4}; ret: {ret};");
+
+            if (this.Plugin.Memory.RightClick() && !this.Plugin.Memory.IsCharacterMoving() && this.Plugin.Config.RightClickOverride)
+            {
+                ret = 1;
             }
 
             return ret;
