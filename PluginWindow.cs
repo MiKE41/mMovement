@@ -83,6 +83,7 @@ namespace mMovement
             ImGui.Checkbox("LegacyCameraLocation Override Enabled", ref this.Ui.Plugin.Config.CameraArcOverride);
 
             ImGui.Checkbox("Right Click Override Enabled", ref this.Ui.Plugin.Config.RightClickOverride);
+            ImGui.Checkbox("Strafe Override Enabled", ref this.Ui.Plugin.Config.StrafeOverride);
 
             if (ImGui.Button("Save")) { this.Ui.Plugin.SaveConfig();  }
 

@@ -16,6 +16,7 @@ namespace mMovement
             internal const string GetMovementMode = "48 83 EC ?? 0F B6 41 ?? 3C ?? 74";
             internal const string GetCameraArcLeftRight = "E8 ?? ?? ?? ?? 0F 28 F0 E8 ?? ?? ?? ?? 0F 28 F8 0F 28 C6 E8 ?? ?? ?? ?? 0F 28 CF"; //A call from MP_Something_CharacterMovement2 to Client__Game__Camera_MP5_Legacy_Position
             internal const string IsInputIDKeyPress = "E8 ?? ?? ?? ?? 84 C0 48 63 03";
+            internal const string MP_KeyPress = "E8 ?? ?? ?? ?? 48 63 13";
         }
         #region Delegates
         private delegate Types.CameraMode GetCameraModeDelegate(IntPtr a1);
@@ -24,7 +25,10 @@ namespace mMovement
         private delegate Types.MovementMode GetMovementModeDelegate(IntPtr a1);
 
         private delegate float GetCameraArcLeftRightDelegate(IntPtr a1);
+
         private delegate bool IsInputIDKeyPressDelegate(IntPtr a1, int a2);
+
+        private delegate bool MP_KeyPressDelegate(IntPtr a1, int a2);
         #endregion
         #region Hooks
         [Signature(Signatures.GetCameraMode, DetourName = nameof(GetCameraModeDetour))]
@@ -38,6 +42,9 @@ namespace mMovement
 
         [Signature(Signatures.IsInputIDKeyPress, DetourName = nameof(IsInputIDKeyPressDetour))]
         private readonly Hook<IsInputIDKeyPressDelegate>? IsInputIDKeyPressHook = null;
+
+        [Signature(Signatures.MP_KeyPress, DetourName = nameof(MP_KeyPressDetour))]
+        private readonly Hook<MP_KeyPressDelegate>? MP_KeyPressHook = null;
         #endregion
         internal Hooks(Plugin plugin)
         {
@@ -49,11 +56,13 @@ namespace mMovement
             this.GetCameraArcLeftRightHook?.Enable();
             this.GetMovementModeHook?.Enable();
             this.IsInputIDKeyPressHook?.Enable(); // this one only seems to handle the strafe key presses -- and all it seems to do is force the character to backpeddle when holding move back and strafe at the same time.
+            this.MP_KeyPressHook?.Enable();
 
             PluginLog.Verbose($"GetCameraMode: {GetCameraModeHook.Address.ToInt64():X}");
             PluginLog.Verbose($"GetMovementMode: {GetMovementModeHook.Address.ToInt64():X}");
             PluginLog.Verbose($"GetCameraArcLeftRight: {GetCameraArcLeftRightHook.Address.ToInt64():X}");
             PluginLog.Verbose($"IsInputIDKeyPress: {IsInputIDKeyPressHook.Address.ToInt64():X}");
+            PluginLog.Verbose($"MP_KeyPress: {MP_KeyPressHook.Address.ToInt64():X}");
         }
         public void Dispose()
         {
@@ -61,6 +70,7 @@ namespace mMovement
             this.GetCameraArcLeftRightHook?.Dispose();
             this.GetMovementModeHook?.Dispose();
             this.IsInputIDKeyPressHook?.Dispose();
+            this.MP_KeyPressHook?.Dispose();
         }
         internal Types.CameraMode CameraModeValue;
         private Types.CameraMode GetCameraModeDetour(IntPtr a1)
@@ -122,8 +132,93 @@ namespace mMovement
         {
             bool ret = IsInputIDKeyPressHook.Original(a1, (int)a2);
 
-            if (a2 == Keybind.StrafeRight || a2 == Keybind.StrafeLeft) {
-                ret = false;
+            if (this.Plugin.Config.StrafeOverride)
+            {
+                if (!this.Plugin.Memory.IsAutoRunning() && MP_KeyPressHook.Original(a1, (int)Keybind.MoveBack))
+                {
+                    if (a2 == Keybind.StrafeLeft || a2 == Keybind.StrafeRight)
+                    {
+                        ret = false;
+                    }
+
+                    if (a2 == Keybind.TurnLeft && MP_KeyPressHook.Original(a1, (int)Keybind.StrafeLeft))
+                    {
+                        ret = true;
+                    }
+
+                    if (a2 == Keybind.TurnRight && MP_KeyPressHook.Original(a1, (int)Keybind.StrafeRight))
+                    {
+                        ret = true;
+                    }
+                }
+
+                if (this.Plugin.Memory.IsAutoRunning())
+                {
+                    if (a2 == Keybind.TurnLeft || a2 == Keybind.TurnRight)
+                    {
+                        ret = false;
+                    }
+
+                    if (a2 == Keybind.StrafeLeft && MP_KeyPressHook.Original(a1, (int)Keybind.TurnLeft))
+                    {
+                        ret = true;
+                    }
+
+                    if (a2 == Keybind.StrafeRight && MP_KeyPressHook.Original(a1, (int)Keybind.TurnRight))
+                    {
+                        ret = true;
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        private bool MP_KeyPressDetour(IntPtr a1, Keybind a2)
+        {
+            bool ret = MP_KeyPressHook.Original(a1, (int)a2);
+
+            if (this.Plugin.Config.StrafeOverride)
+            {
+                if (!this.Plugin.Memory.IsAutoRunning() && MP_KeyPressHook.Original(a1, (int)Keybind.MoveBack))
+                {
+                    if (a2 == Keybind.StrafeLeft || a2 == Keybind.StrafeRight)
+                    {
+                        ret = false;
+                    }
+
+                    if (a2 == Keybind.TurnLeft && MP_KeyPressHook.Original(a1, (int)Keybind.StrafeLeft))
+                    {
+                        ret = true;
+                    }
+
+                    if (a2 == Keybind.TurnRight && MP_KeyPressHook.Original(a1, (int)Keybind.StrafeRight))
+                    {
+                        ret = true;
+                    }
+                }
+
+                if (this.Plugin.Memory.IsAutoRunning())
+                {
+                    if (a2 == Keybind.TurnLeft || a2 == Keybind.TurnRight)
+                    {
+                        ret = false;
+                    }
+
+                    if (a2 == Keybind.StrafeLeft && MP_KeyPressHook.Original(a1, (int)Keybind.TurnLeft))
+                    {
+                        ret = true;
+                    }
+
+                    if (a2 == Keybind.StrafeRight && MP_KeyPressHook.Original(a1, (int)Keybind.TurnRight))
+                    {
+                        ret = true;
+                    }
+                }
+            }
+
+            return ret;
+        }
             }
 
             return ret;

@@ -11,5 +11,6 @@ namespace mMovement
         public Types.CameraMode CameraModeOverrideValue = Types.CameraMode.Standard;
         public bool CameraArcOverride = true;
         public bool RightClickOverride = true;
+        public bool StrafeOverride = true;
     }
 }
