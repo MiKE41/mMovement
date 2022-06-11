@@ -3,7 +3,7 @@ using ImGuiNET;
 using System.Numerics;
 using System;
 
-namespace mMovement
+namespace mMove
 {
     internal class PluginUi : IDisposable
     {
@@ -53,14 +53,14 @@ namespace mMovement
         {
             if (!IsOpen) return;
 
-            ImGui.Checkbox("Movement Type Override Enabled", ref this.Ui.Plugin.Config.MovementModeOverride);
-            if (ImGui.BeginCombo("MovementType:", $"{this.Ui.Plugin.Config.MovementModeOverrideValue}"))
+            ImGui.Checkbox("Move Type Override Enabled", ref this.Ui.Plugin.Config.MoveModeOverride);
+            if (ImGui.BeginCombo("MoveType:", $"{this.Ui.Plugin.Config.MoveModeOverrideValue}"))
             {
-                foreach (var v in Enum.GetValues(typeof(Types.MovementMode)))
+                foreach (var v in Enum.GetValues(typeof(Types.MoveMode)))
                 {
                     if (ImGui.Selectable($"{v}"))
                     {
-                        this.Ui.Plugin.Config.MovementModeOverrideValue = (Types.MovementMode)v;
+                        this.Ui.Plugin.Config.MoveModeOverrideValue = (Types.MoveMode)v;
                     }
                 }
                 ImGui.EndCombo();
@@ -99,7 +99,7 @@ namespace mMovement
             }
 
             ImGui.Text("Hooks");
-            ImGui.Text($"MovementModeValue: {this.Ui.Plugin.Hooks.MovementModeValue}");
+            ImGui.Text($"MoveModeValue: {this.Ui.Plugin.Hooks.MoveModeValue}");
             ImGui.Text($"CameraModeValue: {this.Ui.Plugin.Hooks.CameraModeValue}");
             ImGui.Text($"CameraArcLeftRightValue: {this.Ui.Plugin.Hooks.CameraArcLeftRight}");
         }

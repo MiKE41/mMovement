@@ -3,7 +3,7 @@ using Dalamud.Utility.Signatures;
 using Dalamud.Logging;
 using System.Runtime.InteropServices;
 
-namespace mMovement
+namespace mMove
 {
     internal class Memory
     {

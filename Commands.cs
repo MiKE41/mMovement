@@ -1,7 +1,7 @@
 ﻿using System;
 using Dalamud.Game.Command;
 
-namespace mMovement
+namespace mMove
 {
     internal class Commands : IDisposable
     {
@@ -11,7 +11,7 @@ namespace mMovement
         {
             this.Plugin = plugin;
 
-            this.Plugin.CommandManager.AddHandler("/mmovement", new CommandInfo(this.OnCommand)
+            this.Plugin.CommandManager.AddHandler("/mMove", new CommandInfo(this.OnCommand)
             {
                 HelpMessage = $"Toggle visibility of the {this.Plugin.Name} window",
             });
@@ -19,7 +19,7 @@ namespace mMovement
 
         public void Dispose()
         {
-            this.Plugin.CommandManager.RemoveHandler("/mmovement");
+            this.Plugin.CommandManager.RemoveHandler("/mMove");
         }
 
         private void OnCommand(string command, string arguments)

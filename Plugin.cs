@@ -6,12 +6,12 @@ using Dalamud.Plugin;
 using System;
 using Dalamud.Game;
 
-namespace mMovement
+namespace mMove
 {
     public class Plugin : IDalamudPlugin
     {
-        public string Name => "mMovement";
-        private const string SettingsCommand = "/mmovement";
+        public string Name => "mMove";
+        private const string SettingsCommand = "/mmove";
 
         [PluginService] internal DalamudPluginInterface Interface { get; private set; }
         [PluginService] internal SigScanner SigScanner { get; private set; }
@@ -32,7 +32,7 @@ namespace mMovement
             // Info gathering //Camera Memory //Is Player Moving //Mouse State
             this.Memory = new Memory(this);
 
-            // Hooks //Camera Location //Movement Type //Camera Type
+            // Hooks //Camera Location //Move Type //Camera Type
             this.Hooks = new Hooks(this);
 
             //Create Windows

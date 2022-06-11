@@ -17,8 +17,8 @@
 	  <None Remove=".gitattributes" />
 	  <None Remove=".gitignore" />
 	  <None Remove="DalamudPackager.targets" />
-	  <None Remove="mMovement.json" />
-	  <None Remove="mMovement.sln.DotSettings" />
+	  <None Remove="mMove.json" />
+	  <None Remove="mMove.sln.DotSettings" />
 	  <None Remove="DownloadGithubActions.sh" />
 	  <None Remove="README.md" />
 	</ItemGroup>

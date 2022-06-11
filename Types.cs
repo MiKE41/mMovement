@@ -1,8 +1,8 @@
-﻿namespace mMovement
+﻿namespace mMove
 {
     public class Types
     {
-        public enum MovementMode
+        public enum MoveMode
         {
             Standard = 0,
             Legacy = 1

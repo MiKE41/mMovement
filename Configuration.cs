@@ -1,12 +1,12 @@
 ﻿using Dalamud.Configuration;
 
-namespace mMovement
+namespace mMove
 {
     public class Configuration : IPluginConfiguration
     {
         public int Version { get; set; }
-        public bool MovementModeOverride = true;
-        public Types.MovementMode MovementModeOverrideValue = Types.MovementMode.Legacy;
+        public bool MoveModeOverride = true;
+        public Types.MoveMode MoveModeOverrideValue = Types.MoveMode.Legacy;
         public bool CameraModeOverride = true;
         public Types.CameraMode CameraModeOverrideValue = Types.CameraMode.Standard;
         public bool CameraArcOverride = true;
