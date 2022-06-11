@@ -88,9 +88,10 @@ namespace mMovement
             if (ImGui.Button("Save")) { this.Ui.Plugin.SaveConfig();  }
 
             ImGui.Text("Memory things");
-            ImGui.Text($"{this.Ui.Plugin.Memory.RightClick()}");
-            ImGui.Text($"{this.Ui.Plugin.Memory.LeftClick()}");
-            ImGui.Text($"{this.Ui.Plugin.Memory.IsCharacterMoving()}");
+            ImGui.Text($"RightClick: {this.Ui.Plugin.Memory.RightClick()}");
+            ImGui.Text($"LeftClick: {this.Ui.Plugin.Memory.LeftClick()}");
+            ImGui.Text($"IsCharacterMoving: {this.Ui.Plugin.Memory.IsCharacterMoving()}");
+            ImGui.Text($"IsAutoRunning: {this.Ui.Plugin.Memory.IsAutoRunning()}");
             var Camera = this.Ui.Plugin.Memory.Camera();
             foreach (var field in typeof(Memory.CameraMemoryStruct).GetFields())
             {
